@@ -11,6 +11,21 @@ public class MyMouseInput : MonoBehaviour
     public string tagname;
     public Material[] ChangeMaterial;
     Renderer rend;
+
+    //RaycastHit Rayhit;
+    //Vector3 Mousepoint;
+    //public GameObject prefab;
+
+    //public void Start()
+    //{
+    //    Ray ray= Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    if (Physics.Raycast(ray, out Rayhit, 50000f, (1 << 8)))
+    //    {
+    //        transform.position = Rayhit.point;
+    //    }
+    //}
+
+
     public /*PrimitiveType*/ void ChangeType(int type /*out PrimitiveType MyTest*/)
     {
         Mytype = type;
@@ -21,8 +36,6 @@ public class MyMouseInput : MonoBehaviour
         MyTexture = Texture;
     }
 
-    //for transparency
-    RaycastHit RHit;
     // Update is called once per frame
     void Update()
     {
@@ -31,11 +44,11 @@ public class MyMouseInput : MonoBehaviour
         bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
 
         //--------------------------------------------------------------------
-        Ray mousePosition = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //Ray mousePosition = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(mousePosition, out RHit, 50000f, (1<<8))){
-            transform.position = hitInfo.point;
-        }
+        //if (Physics.Raycast(mousePosition, out Rayhit, 50000f, (1<<8))){
+        //    transform.position = hitInfo.point;
+        //}
         //---------------------------------------------------------------------
         if (Input.GetMouseButtonUp(0))  // check if left button is pressed
         {
@@ -73,6 +86,9 @@ public class MyMouseInput : MonoBehaviour
                 
                 var Obj = GameObject.CreatePrimitive(test);
 
+                Obj.AddComponent<TriangleExplosion>();
+
+
                 //this is to change the material
                 rend=Obj.GetComponent<Renderer>();
                 rend.sharedMaterial = ChangeMaterial[MyTexture];
@@ -83,9 +99,6 @@ public class MyMouseInput : MonoBehaviour
                 //cube.GetComponent<Renderer>().material = blockMaterial;
 
                 #endregion
-                
-
-                //cube.transform.position = new Vector3(hitInfo.point.x, hitInfo.point.y + 0.5f, hitInfo.point.z);
                 #region HIDE
                 //once the ray hits an object with tag Base, we want to spawn in a cube in the location of the raycast hit
                 if (hitInfo.transform.tag.Equals("Base"))
@@ -103,14 +116,7 @@ public class MyMouseInput : MonoBehaviour
                 #endregion
 
                 Debug.DrawRay(hitInfo.point, hitInfo.normal, Color.red, 2, false);
-                //Debug.Log(hitInfo.normal);
                 #endregion
-
-
-            }
-            else
-            {
-                //Debug.Log("No hit");
             }
             #endregion
         }
@@ -119,16 +125,13 @@ public class MyMouseInput : MonoBehaviour
             if (hit) { 
             if (hitInfo.transform.tag != "Base")
             {
-                Destroy(hitInfo.collider.gameObject);
-
+                    StartCoroutine(hitInfo.transform.GetComponent<TriangleExplosion>().SplitMesh(true));
+                
             }
             
                 return;
             }
-            //else if (hitInfo.transform.tag.Equals("MySphere"))
-            //{
-            //    Debug.Log("im sphere");
-            //}
+            
         }
     }
 }
